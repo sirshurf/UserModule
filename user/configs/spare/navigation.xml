@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+   <nav>
+      <static>
+         <label>Static pages</label>
+         <uri>/</uri>
+         <pages> 
+            <disclaimer>
+               <label>Disclaimer</label>
+               <uri>/disclaimer</uri>
+            </disclaimer>
+            <termsconditions>
+               <label>Terms and Conditions</label>
+               <uri>/termsConditions</uri>
+            </termsconditions>
+            <disclaimer>
+               <label>Privacy</label>
+               <uri>/privacy</uri>
+            </disclaimer>                
+         </pages>
+      </static>
+      <administration>
+         <label>Admin</label>
+         <uri>/admin</uri>
+         <pages>
+            <user_login>
+               <label>Login</label>
+               <uri>/login</uri>
+               <resource>user:login</resource>
+               <privilege>login</privilege>
+            </user_login>
+            <user_logout>
+               <label>Logout</label>
+               <uri>/logout</uri>
+               <resource>user:logout</resource>
+               <privilege>logout</privilege>
+            </user_logout>
+            <user_update_profile>
+               <label>Update Profile</label>
+               <uri>/update-profile</uri>
+               <resource>user:updateprofile</resource>
+               <privilege>updateprofile</privilege>
+            </user_update_profile>
+            <user_update_password>
+               <label>Update Password</label>
+               <uri>/update-password</uri>
+               <resource>user:updatepassword</resource>
+               <privilege>updatepassword</privilege>
+            </user_update_password>
+            <user_forgot_password>
+               <label>Forgot Password</label>
+               <uri>/forgot-password</uri>
+               <resource>user:forgotpassword</resource>
+               <privilege>forgotpassword</privilege>
+            </user_forgot_password>
+         </pages>
+      </administration>
+   </nav>
+</config>

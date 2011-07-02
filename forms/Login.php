@@ -7,6 +7,12 @@ class User_Form_Login extends ZendX_JQuery_Form
     {
         /* Form Elements & Other Definitions Here ... */
         
+        $objOptions = new Zend_Config_Xml(
+        dirname(__FILE__) . '/configs/forms/forms.xml');
+        
+        $this->setOptions($objOptions->login);
+        
+        /*
 		$this->setName('LogIn');
 		$this->setMethod('post');
 		
@@ -23,7 +29,8 @@ class User_Form_Login extends ZendX_JQuery_Form
 		$login = new Zend_Form_Element_Submit('Login');
 		$login->setLabel('Login');
 		$this->addElement($login);
-		        
+		  
+		        */
     }
 
 

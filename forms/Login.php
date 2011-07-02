@@ -8,7 +8,7 @@ class User_Form_Login extends ZendX_JQuery_Form
         /* Form Elements & Other Definitions Here ... */
         
         $objOptions = new Zend_Config_Xml(
-        dirname(__FILE__) . '../configs/forms/forms.xml');
+        dirname(__FILE__) . '/../configs/forms/forms.xml');
         
         $this->setOptions($objOptions->login);
         

@@ -7,13 +7,29 @@ class User_IndexController extends Zend_Controller_Action
     }
     public function indexAction ()
     {
+
+    }
+    public function forgotPasswordAction ()
+    {
+        // action body
+    }
+    public function updatePasswordAction ()
+    {
+        // action body
+    }
+    public function updateProfileAction ()
+    {
+        // action body
+    }
+    public function loginAction ()
+    {
         $config = $this->getInvokeArg(bootstrap)->getOptions();
         // action body		
         $auth = Zend_Auth::getInstance();
         if ($auth->hasIdentity()) {
             $this->_redirect('/');
         }
-        $form = new User_Form_Login();
+        $objForm = new User_Form_Login();
         if ($this->_request->isPost()) {
             if ($form->isValid($this->_request->getPost())) {
                 $username = trim($form->getValue('username'));
@@ -77,24 +93,7 @@ class User_IndexController extends Zend_Controller_Action
                 }
             }
         }
-        $this->view->objForm = $form;
-    }
-    public function forgotPasswordAction ()
-    {
-        // action body
-    }
-    public function updatePasswordAction ()
-    {
-        // action body
-    }
-    public function updateProfileAction ()
-    {
-        // action body
-    }
-    public function loginAction ()
-    {
-        // action body
-    }
+        $this->view->objForm = $objForm;    }
     public function logoutAction ()
     {
         // action body

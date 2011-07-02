@@ -13,7 +13,7 @@ class User_IndexController extends Zend_Controller_Action
         if ($auth->hasIdentity()) {
             $this->_redirect('/');
         }
-        $form = new User_Form_Login();
+        $objForm = new User_Form_Login();
         if ($this->_request->isPost()) {
             if ($form->isValid($this->_request->getPost())) {
                 $username = trim($form->getValue('username'));
@@ -77,7 +77,7 @@ class User_IndexController extends Zend_Controller_Action
                 }
             }
         }
-        $this->view->objForm = $form;
+        $this->view->objForm = $objForm;
     }
     public function forgotPasswordAction ()
     {

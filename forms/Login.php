@@ -1,6 +1,6 @@
 <?php
 
-class User_Form_Login extends ZendX_Form
+class User_Form_Login extends ZendX_JQuery_Form
 {
 
     public function init()

@@ -1,29 +1,36 @@
 <?php
+
 class User_IndexController extends Zend_Controller_Action
 {
+
     public function init ()
     {
         /* Initialize action controller here */
     }
+
     public function indexAction ()
     {
 
     }
+
     public function forgotPasswordAction ()
     {
         // action body
     }
+
     public function updatePasswordAction ()
     {
         // action body
     }
+
     public function updateProfileAction ()
     {
         // action body
     }
+
     public function loginAction ()
     {
-        $config = $this->getInvokeArg(bootstrap)->getOptions();
+        $config = $this->getInvokeArg('bootstrap')->getOptions();
         // action body		
         $auth = Zend_Auth::getInstance();
         if ($auth->hasIdentity()) {
@@ -93,14 +100,87 @@ class User_IndexController extends Zend_Controller_Action
                 }
             }
         }
-        $this->view->objForm = $objForm;    }
+        $this->view->objForm = $objForm;
+    }
+
     public function logoutAction ()
     {
         // action body
     }
+
     public function accessDeniedAction ()
     {
         // action body
+    }
+
+    public function initAction ()
+    {
+        
+        $intRequestInit = $this->_request->getParam("initstart", 0);
+        
+        if (! empty($intRequestInit)) {
+            // Start table initialization
+            
+
+            $arrClassActions = array();
+            $handle = opendir(realpath(dirname(__FILE__) . self::DIRECTORY));
+            if ($handle) {
+                while (false !== ($file = readdir($handle))) {
+                    if ($file != "." && $file != ".." && ! is_dir($file)) {
+                        // Now include file
+                        include_once realpath(
+                        dirname(__FILE__) . self::DIRECTORY) . '/' . $file;
+                        $info = pathinfo($file);
+                        $file_name = basename($file, '.' . $info['extension']);
+                        $intControllerStringPosition = strpos($file_name, 
+                        self::CONTROLLER);
+                        if (! empty($intControllerStringPosition)) {
+                            $strControllerName = substr($file_name, 0, 
+                            $intControllerStringPosition);
+                            $strControllerName = self::lcfirst(
+                            $strControllerName);
+                            // Read with Reflection
+                            $className = self::CLASS_PREFIX .
+                             $file_name;
+                            
+                            $resourceName = $objReflection = new ReflectionClass(
+                            $className);
+                            $arrClassMethods = $objReflection->getMethods();
+                            // Get Actions Names
+                            foreach ($arrClassMethods as $objMethod) {
+                                $intStringPosition = strpos($objMethod->name, 
+                                self::ACTION);
+                                if (! empty($intStringPosition)) {
+                                    $strActionName = substr($objMethod->name, 0, 
+                                    $intStringPosition);
+                                    $arrClassActions[$strControllerName][$strActionName][] = User_Model_Roles::DEFAULT_ROLE_GUEST;
+                                }
+                            }
+                        }
+                    }
+                }
+                closedir($handle);
+            }
+            
+            Labadmin_Models_SystemMessages::initTable();
+            Labadmin_Models_ProjectStatuses::initTable();
+            Labadmin_Models_ProjectsRequestsStatuses::initTable();
+            Labadmin_Models_FilesPermission::initTable();
+            Labadmin_Models_SystemSettings::initTable();
+            Labadmin_Models_SystemNotification::initTable();
+            
+            Labadmin_Models_Static::setJgrowlMessage("LBL_ADMIN_INIT_DONE");
+        
+        }
+        
+        $arrButtons = array();
+        $arrButtons[] = array("module" => "prj", "controller" => "init", 
+        "action" => "index", 
+        "onClick" => 'document.location.href="' . $this->view->url(
+        array('module' => 'prj', "controller" => "init", "action" => "index", 
+        "initstart" => "1")) . '";', "name" => "LBL_BUTTON_ADMIN_INIT_TABLE");
+        
+        $this->view->arrActions = $arrButtons;
     }
 }
 

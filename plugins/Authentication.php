@@ -9,40 +9,34 @@
  */
 class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
 {
-    CONST MODULE = "user";
-    CONST CONTROLLER = "index";
-    CONST ACTION_LOGIN = "login";
-    private $_acl = null;
-    public function __construct ()
-    {}
+    CONST MODULE_LOGIN = "user";
+    
+    CONST CONTROLLER_LOGIN  = "index";
+    
+    CONST ACTION_LOGIN  = "login";    
+    CONST ACTION_UNAUTORISE = "unauthorized";
+
     public function preDispatch (Zend_Controller_Request_Abstract $request)
-    {
-        if (! Zend_Auth::getInstance()->hasIdentity()) {
-            $module = $request->getModuleName();
-            $resource = $request->getControllerName();
-            $action = $request->getActionName();
-            $params = $request->getUserParams();
-            $arrOptions = $db = Zend_Controller_Front::getInstance()->getParam(
-            "bootstrap")->getOptions();
-            if (! empty($arrOptions['excludeAuthentication'])) {
-                $arrExcludeAuthentication = $arrOptions['excludeAuthentication'];
-            } else {
-                $arrExcludeAuthentication = array();
-            }
-            if (! in_array($resource, $arrExcludeAuthentication)) {
-                // 'contact' !== $resource && 'soap' !== $resource) {
-                if (($module !== self::MODULE) &&
-                 ($resource !== self::CONTROLLER)) {
-                    $redirect = array("module" => $module, 
-                    "resorce" => $resource, "action" => $action, 
-                    "params" => $params);
-                    $session = new Zend_Session_Namespace("uri");
-                    $session->url = $redirect;
-                }
-                $request->setModuleName(self::MODULE)
-                    ->setControllerName(self::CONTROLLER)
+    {        
+        $objAcl = new User_Model_Acl();
+        
+    	//For this example, we will use the controller as the resource:
+		$resource = $request->getControllerName ();
+		$privilege = $request->getActionName ();
+		
+		// checking permission our special way
+		$boolFlag = $objAcl->checkPermissions ( $resource, $privilege );
+		
+		if (empty ( $boolFlag )) {		    
+            if (! Zend_Auth::getInstance()->hasIdentity()) {
+                                $request->setModuleName(self::MODULE_LOGIN)
+                    ->setControllerName(self::CONTROLLER_LOGIN)
                     ->setActionName(self::ACTION_LOGIN);
+            } else {	    
+    			// If the user has no access we send him elsewhere by changing the request
+			    $request->setModuleName(self::MODULE_LOGIN)->setControllerName ( self::CONTROLLER_LOGIN )->setActionName ( self::ACTION_UNAUTORISE );
             }
-        }
+		}		
+		return;		
     }
 }

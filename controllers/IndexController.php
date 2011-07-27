@@ -162,14 +162,14 @@ class User_IndexController extends Zend_Controller_Action
                 closedir($handle);
             }
             
-            Labadmin_Models_SystemMessages::initTable();
-            Labadmin_Models_ProjectStatuses::initTable();
-            Labadmin_Models_ProjectsRequestsStatuses::initTable();
-            Labadmin_Models_FilesPermission::initTable();
-            Labadmin_Models_SystemSettings::initTable();
-            Labadmin_Models_SystemNotification::initTable();
-            
-            Labadmin_Models_Static::setJgrowlMessage("LBL_ADMIN_INIT_DONE");
+//            Labadmin_Models_SystemMessages::initTable();
+//            Labadmin_Models_ProjectStatuses::initTable();
+//            Labadmin_Models_ProjectsRequestsStatuses::initTable();
+//            Labadmin_Models_FilesPermission::initTable();
+//            Labadmin_Models_SystemSettings::initTable();
+//            Labadmin_Models_SystemNotification::initTable();
+//            
+//            Labadmin_Models_Static::setJgrowlMessage("LBL_ADMIN_INIT_DONE");
         
         }
         

@@ -3,16 +3,6 @@
 class User_IndexController extends Zend_Controller_Action
 {
 
-    public function init ()
-    {
-        /* Initialize action controller here */
-    }
-
-    public function indexAction ()
-    {
-
-    }
-
     public function forgotPasswordAction ()
     {
         // action body
@@ -23,95 +13,232 @@ class User_IndexController extends Zend_Controller_Action
         // action body
     }
 
-    public function updateProfileAction ()
-    {
-        // action body
-    }
 
-    public function loginAction ()
-    {
-        $config = $this->getInvokeArg('bootstrap')->getOptions();
-        // action body		
-        $auth = Zend_Auth::getInstance();
-        if ($auth->hasIdentity()) {
-            $this->_redirect('/');
-        }
-        $objForm = new User_Form_Login();
-        if ($this->_request->isPost()) {
-            if ($form->isValid($this->_request->getPost())) {
-                $username = trim($form->getValue('username'));
-                $password = trim($form->getValue('password'));
-                
-                $adapter = new Zend_Auth_Adapter_DbTable($options, $username, 
-                $password);
-                $adapter->setIdentity($username);
-                $adapter->setCredential($password);
-                $result = $auth->authenticate($adapter);
-                if ($log_enable) {
-                    $messages = $result->getMessages();
-                    $logger = new Zend_Log();
-                    $columnMapping = array('lvl' => 'priority', 
-                    'request' => 'message', 'responce' => 'responce', 
-                    'created_on' => 'timestamp');
-                    $objDb = $this->getInvokeArg('bootstrap')
-                        ->getResource('multidb')
-                        ->getDb('db1');
-                    $writer = new Zend_Log_Writer_Db($objDb, 'ldap_logs', 
-                    $columnMapping);
-                    $logger->addWriter($writer);
-                    $filter = new Zend_Log_Filter_Priority(Zend_Log::DEBUG);
-                    $logger->addFilter($filter);
-                    //					foreach ( $messages as $i => $message ) {
-                    for ($i = 0; $i < count($messages); $i += 2) {
-                        $request = $messages[$i];
-                        $responce = $messages[$i + 1];
-                        if ($i > 1) { // $messages[2] and up are log messages					
-                            $request = str_replace(
-                            "\n", "\n  ", $request);
-                            $responce = str_replace("\n", "\n  ", $responce);
-                            try {
-                                $logger->log($request, Zend_Log::DEBUG, 
-                                array('responce' => $responce));
-                            } catch (Exception $e) {
-                                $this->view->errorMessage = $e->getMessage();
-                                return;
-                            }
-                        }
-                    }
-                }
-                if ($result->isValid()) {
-                    $boolUpdateUser = Labadmin_Models_Users::getUser($adapter);
-                    // Get user roles
-                    Labadmin_Models_Users::getRole($adapter);
-                    if ($boolUpdateUser) {
-                        $this->_forward("update", "user");
-                    } else {
-                        $session = new Zend_Session_Namespace("uri");
-                        if (! empty($session->url['params'])) {
-                            $strUrl = $this->view->url($session->url['params']);
-                            $this->_redirect($strUrl);
-                        } else {
-                            $this->_redirect("/");
-                        }
-                    }
-                } else {
-                    $arrMessages = $result->getMessages();
-                    $this->view->errorMessage = $arrMessages[0];
-                }
-            }
-        }
-        $this->view->objForm = $objForm;
-    }
+	public function indexAction() {
+		
+		$objUserTable = new Labadmin_Models_Users ();
+		$objSelect = $objUserTable->select ();
+		
+		$grid = new Ingot_JQuery_JqGrid ( 'users', new Ingot_JQuery_JqGrid_Adapter_DbTableSelect ( $objSelect ) );
+		$grid->setIdCol ( Labadmin_Models_Users::COL_TZ );
+		
+		$strUrl = $this->view->url ( array (
+			'module' => 'users', 'controller' => 'users', 'action' => 'view' 
+		), null, true, false );
+		$grid->setOption ( 'ondblClickRow', "function(rowId, iRow, iCol, e){ if(rowId){  document.location.href ='" . $strUrl . "/tz/'+rowId } }" );
+		
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_TZ ) );		
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_FIRST_NAME ) );
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_LAST_NAME ) );
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_DISPLAY_NAME ) );
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column_Decorator_Link(new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_EMAIL ), array('link' => 'mailto:%s') ) );
+		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column_Decorator_Link(new Ingot_JQuery_JqGrid_Column ( Labadmin_Models_Users::COL_EMAIL2 ), array('link' => 'mailto:%s') ) );
+		
+		
+		$grid->registerPlugin ( new Ingot_JQuery_JqGrid_Plugin_ToolbarFilter () );
+		$this->view->grid = $grid->render ();
+	}
+	
+		
+	public function editAction() {
+		
+		$objNavigation = $this->view->navigation ()->findBy ( "controller", "users" )->setActive ();
+		
+		$objAcl = Openiview_Acl::$objIntance;
+		
+		// Get user object
+		$objUserData = new Labadmin_Models_Users ();
+		
+		// Get Role Data
+		$session_role = new Zend_Session_Namespace ( 'role' );
+		$arrRoles = $session_role->role;
+		
+		$flipped_haystack = array_flip ( $arrRoles );
+		
+		// Get user data
+		$objUserSessionData = new Zend_Session_Namespace ( 'user' );
+		
+		$nmbTzRequested = $this->_request->getParam ( "tz", $objUserSessionData->tz );
+		
+		// Create form
+		if (($nmbTzRequested !== $objUserSessionData->tz) && ($objAcl->checkPermissions ("users", "userdata", "canedit" ))) {
+			$objForm = $objUserData->getUserForm ( $nmbTzRequested, $this->view );
+		} else {
+			$objForm = $objUserData->getUserForm ( $objUserSessionData->tz, $this->view );
+			$nmbTzRequested = $objUserSessionData->tz;
+		}
+		
+		if ($this->_request->isPost ()) {
+			$formData = $this->_request->getPost ();
+			
+			if ($objForm->isValid ( $formData )) {
+				
+				$objUserRow = $objUserData->getUserById ( $nmbTzRequested );
+				
+				$objFileData = new Labadmin_Models_Files ();
+				$intFileSave = $objFileData->saveImage ( $formData, $objForm, Labadmin_Models_Users::COL_USER_IMG, $objUserRow->{Labadmin_Models_Users::COL_TZ} );
+				
+				$arrData = $objForm->getValues ();
+				$arrUpdateData = $arrData;
+				unset ( $arrUpdateData ['tz'] );
+				
+				if (empty ( $intFileSave )) {
+					unset ( $arrUpdateData [Labadmin_Models_Users::COL_USER_IMG] );
+				}
+				
+				$objUserRow->setFromArray ( $arrUpdateData );
+				$objUserRow->{Labadmin_Models_Users::COL_NEED_UPDATE} = FALSE;
+				
+				if (! empty ( $intFileSave )) {
+					$objUserRow->{Labadmin_Models_Users::COL_USER_IMG} = $intFileSave;
+				}
+				
+				if ($objUserRow->save ()) {
+					
+					Labadmin_Models_Static::setJgrowlMessage ( "LBL_UPDATE_OK" );
+					
+					if ($nmbTzRequested == $objUserSessionData->tz) {
+						$objUserData->setSession ( $arrData );
+					}
+					
+					$strUrl = $this->view->url ( array (
+						'module' => 'users', 'controller' => 'users', 'action' => 'view', "tz" => $arrData ['tz'] 
+					), null, true );
+					$this->_redirect ( $strUrl );
+				} else {
+					Labadmin_Models_Static::setJgrowlMessage ( "LBL_UPDATE_FAIL" );
+				
+				}
+			} else {
+				$objForm->populate ( $formData );
+				Labadmin_Models_Static::setJgrowlMessage ( "LBL_UPDATE_FAIL" );
+			
+			}
+		}
+		// render
+		$this->view->form = $objForm;
+		
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'users', "action" => "edit", "onClick" => '$("#' . $objForm->getAttrib ( 'id' ) . '").submit();', "name" => 'LBL_BUTTON_USER_EDIT_SAVE'
+		);
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'users', "action" => "view", "name" => 'LBL_BUTTON_USER_DETAILS', "params" => array (
+			"tz" => $nmbTzRequested 
+		) 
+		);
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'users', "action" => "index", "name" => 'LBL_BUTTON_USER_LIST'
+		);
+		
+		$this->view->arrActions = $arrButtons;
+	
+	}
+	
+	public function viewAction() {
+		
+		$objNavigation = $this->view->navigation ()->findBy ( "controller", "users" )->setActive ();
+		
+		$objAcl = Openiview_Acl::$objIntance;
+		
+		// Get user object
+		$objUserData = new Labadmin_Models_Users ();
+		
+		// Get Role Data
+		$session_role = new Zend_Session_Namespace ( 'role' );
+		$arrRoles = $session_role->role;
+		
+		$flipped_haystack = array_flip ( $arrRoles );
+		
+		// Get user data
+		$objUserSessionData = new Zend_Session_Namespace ( 'user' );
+		
+		$nmbTzRequested = $this->_request->getParam ( "tz", $objUserSessionData->tz );
+		
+		// Create form
+		
 
-    public function logoutAction ()
-    {
-        // action body
-    }
+		$nmbTzRequested = ( int ) $nmbTzRequested;
+		
+		//  Get User Data
+		$objUserDataSelect = $objUserData->select ();
+		$objUserDataSelect->where ( Labadmin_Models_Users::COL_TZ . " = ?", $nmbTzRequested );
+		
+		$objUserDataRow = $objUserData->fetchRow ( $objUserDataSelect );
+		
+		if (! empty ( $objUserDataRow )) {
+			
+			$this->view->objUserDataRow = $objUserDataRow;
+		
+		// Get the rest of the user data
+		
 
-    public function accessDeniedAction ()
-    {
-        // action body
-    }
+		// Get Users IM
+		
+
+		// Get User Projects
+		
+
+		} else {
+			// Redirect to HomePage with error...
+			Labadmin_Models_Static::setJgrowlMessage ( "LBL_ERROR_USER_ACCESS" );
+			
+			$strUrl = $this->view->url ( array (
+				'module' => 'prj', 'controller' => 'project', 'action' => 'awaitsprjapproval' 
+			), null, true );
+			$this->_redirect ( $strUrl );
+		
+		}
+		
+		// Create form
+		if ((($nmbTzRequested == $objUserSessionData->tz) || ($objAcl->checkPermissions ("users", "userdata", "canedit" )))) {
+			$arrButtons [] = array (
+				'module' => 'users', 'controller' => 'users', "action" => "edit", "name" => "LBL_BUTTON_USER_DETAILS_EDIT", "params" => array (
+				"tz" => $nmbTzRequested 
+			) 
+			);
+		}
+		
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'authentication', "action" => "takepermition", "name" => "LBL_BUTTON_USER_ASSUME_USER_PERMITION", "params" => array (
+			"tz" => $nmbTzRequested 
+		) 
+		);
+		$arrButtons [] = array (
+			'module' => 'messages', 'controller' => 'messages', "action" => "send", "name" => "LBL_BUTTON_USER_SEND_MESSAGE", "params" => array (
+			"tz" => $nmbTzRequested 
+		) 
+		);
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'index', "action" => "prj", "name" => "LBL_BUTTON_USER_PRJ_LIST", "params" => array (
+			"tz" => $nmbTzRequested 
+		) 
+		);
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'index', "action" => "exp", "name" => "LBL_BUTTON_USER_EXP_LIST", "params" => array (
+			"tz" => $nmbTzRequested 
+		) 
+		);
+		
+		$arrButtons [] = array (
+			'module' => 'users', 'controller' => 'users', "action" => "index", "name" => "LBL_BUTTON_USER_LIST" 
+		);
+		
+		$this->view->arrActions = $arrButtons;
+	
+	}
+	
+	public function inituserdetailsAction() {
+		$objUserTable = new Labadmin_Models_Users ();
+		$objUserTable->forceUserDetailUpdate ();
+		
+		Labadmin_Models_Static::setJgrowlMessage ( "LBL_UPDATE_OK" );
+		
+		$strUrl = $this->view->url ( array (
+			'module' => 'semesters', 'controller' => 'semester', 'action' => 'index' 
+		), null, true );
+		$this->_redirect ( $strUrl );
+	}
+    
 
     public function initAction ()
     {

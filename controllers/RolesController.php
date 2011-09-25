@@ -9,20 +9,27 @@ class User_RolesController extends Zend_Controller_Action
 		$objUserTable = new User_Model_Db_Roles ();
 		$objSelect = $objUserTable->select ();
 		 
-		$grid = new Ingot_JQuery_JqGrid ( 'users', new Ingot_JQuery_JqGrid_Adapter_DbTableSelect ( $objSelect ) );
-		$grid->setIdCol ( User_Model_Db_Roles::COL_ID_ROLES ); 
+		$objGrid = new Ingot_JQuery_JqGrid ( 'users', new Ingot_JQuery_JqGrid_Adapter_DbTableSelect ( $objSelect ) );
+		$objGrid->setIdCol ( User_Model_Db_Roles::COL_ID_ROLES ); 
+		$objGrid->setDblClkEdit(TRUE);
+		$objGrid->setLocalEdit();		
+				
+		$objGrid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ROLE, array('editable' => true, 'editrules'=> array('required'=> true)) ) );		
+		$objGrid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ROLE_TITLE, array('editable' => true, 'editrules'=> array('required'=> true)) ) );
 		
-		$strUrl = $this->view->url ( array (
-			'module' => 'users', 'controller' => 'users', 'action' => 'view' 
-		), null, true, false );
-		$grid->setOption ( 'ondblClickRow', "function(rowId, iRow, iCol, e){ if(rowId){  document.location.href ='" . $strUrl . "/tz/'+rowId } }" );
+		$objParentColumn =  new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ID_PARENT, array('editable' => true, 'editrules'=> array('required'=> true)) ); 
+		$objParentDecorator = new Ingot_JQuery_JqGrid_Column_Decorator_Search_Select($objParentColumn, array('value' => array(1=>1,2=>2)));
+		$objParentEditDecorator = new Ingot_JQuery_JqGrid_Column_Decorator_Edit_Select($objParentDecorator, array('value' => array(1=>1,2=>2)));
+		$objGrid->addColumn ($objParentDecorator );
 		
-		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ROLE ) );		
-		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ROLE_TITLE ) );
-		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ID_PARENT ) );
-		$grid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ORDER ) );
+		$objGrid->addColumn ( new Ingot_JQuery_JqGrid_Column ( User_Model_Db_Roles::COL_ORDER, array('editable' => true,'edittype'=>'text' , 'editoptions' => array('defaultValue' => '99'), 'editrules'=> array('required'=> true, 'number'=>true)) ) );
+				
+		$objGridPager = $objGrid->getPager ();		
+		$objGridPager->setDefaultAdd ();
+		$objGridPager->setDefaultEdit ();
+		$objGridPager->setDefaultDel ();
 		
-		$grid->registerPlugin ( new Ingot_JQuery_JqGrid_Plugin_ToolbarFilter () );
-		$this->view->grid = $grid->render ();
+		$objGrid->registerPlugin ( new Ingot_JQuery_JqGrid_Plugin_ToolbarFilter () );
+		$this->view->grid = $objGrid->render ();
     }
 }

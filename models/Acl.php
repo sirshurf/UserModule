@@ -22,46 +22,33 @@ class User_Model_Acl extends Zend_Acl
         
         foreach ($roles as $key => $arrRole) {
             
-            if (! empty($arrRole['Parent'])) {
-                $this->addRole(new Zend_Acl_Role($arrRole['Name']), 
-                $arrRole['Parent']);
+            if (! empty($arrRole[User_Model_Db_Roles::COL_ID_PARENT]) && ($arrRole[User_Model_Db_Roles::COL_ID_PARENT] !== $arrRole[User_Model_Db_Roles::COL_ID_ROLES])) {
+                $this->addRole(new Zend_Acl_Role($arrRole[User_Model_Db_Roles::COL_ID_ROLES]), $arrRole[User_Model_Db_Roles::COL_ID_PARENT]);
             } else {
-                $this->addRole(new Zend_Acl_Role($arrRole['Name']));
+                $this->addRole(new Zend_Acl_Role($arrRole[User_Model_Db_Roles::COL_ID_ROLES]));
+            }
+        }
+        
+        $arrResources = User_Model_Resources::getResources(); // Create Resources...
+        foreach ($arrResources as $intIdResource => $objResourceRow) {
+            // Register new resource
+            if (! $this->has($objResourceRow->{User_Model_Db_Resources::COL_ID_RESOURCES})) {
+                $this->addResource(new Zend_Acl_Resource($objResourceRow->{User_Model_Db_Resources::COL_ID_RESOURCES}));
             }
         }
         
         // Add roles to the Acl element
-        $this->deny();
+        //$this->deny();
+        $this->allow();
         
-        $arrResource = User_Model_Resources::getResources();
+       // $this->allow(((0 == $objPermissionRow->{Labadmin_Models_AclPermission::COL_ID_ROLES}) ? null : $objPermissionRow->{Labadmin_Models_AclPermission::COL_ID_ROLES}), 
+     //   $objPermissionRow->{Labadmin_Models_AclPermission::COL_ID_RESOURCES}, 
+   //     (('all' == $objPermissionRow->{Labadmin_Models_AclPermission::COL_ACTION}) ? null : $objPermissionRow->{Labadmin_Models_AclPermission::COL_ACTION}));
         
-        foreach ($arrResource as $strResourceName => $arrResourceOptions) {
-            // Register new resource
-            $this->add(new Zend_Acl_Resource($strResourceName));
-            
-            // check if it's needed, we have a Deny All 7 rows up?
-            $this->deny(null, $strResourceName, null);
-            
-            foreach ($arrResourceOptions as $strOptions => $arrRoles) {
-                
-                $this->allow((('all' == $arrRoles[0]) ? null : $arrRoles), 
-                $strResourceName, (('all' == $strOptions) ? null : $strOptions));
-            
-            }
-        
-        }
-                
         self::$objIntance = $this;
     }
-
-    /**
-     * Checking that this user has role that can enter here
-     * 
-     * @param $resource
-     * @param $privilege
-     * @return bool
-     */
-    public function checkPermissions ($resource = null, $privilege = null )
+    
+    public function checkPermissionsById ($resource = null, $privilege = null, $intLabId = null, $intProjectId = null, $boolStricked = false)
     {
         if (Zend_Auth::getInstance()->hasIdentity()) {
             $session_role = new Zend_Session_Namespace('userDetails');
@@ -70,6 +57,7 @@ class User_Model_Acl extends Zend_Acl
             }
         } else {
             $role = User_Model_Roles::DEFAULT_ROLE_GUEST;
+            $role = $role[User_Model_Db_Roles::COL_ID_ROLES];
         }
         
         /**
@@ -88,6 +76,31 @@ class User_Model_Acl extends Zend_Acl
             }
         }
         
+        return false;
+    }
+
+    /**
+     * Checking that this user has role that can enter here
+     * 
+     * @param $resource
+     * @param $privilege
+     * @return bool
+     */
+    public function checkPermissions ($module = null, $controller = null, $privilege = null, $intLabId = null, $intProjectId = null, $boolStricked = false)
+    {
+        /**
+         * Removes php ending for reports usage...
+         */
+        if ('php' === substr($privilege, - 3)) {
+            $privilege = substr($privilege, 0, - 4);
+            $privilege = str_ireplace("_", "-", $privilege);
+        }
+        // Get Correct resource ID
+        //
+        $resource = User_Model_Resources::getResourceId($module, $controller);
+        if ($resource || $privilege) {
+            return $this->checkPermissionsById($resource, $privilege, $intLabId, $intProjectId, $boolStricked);
+        }
         return false;
     }
 }

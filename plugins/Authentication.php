@@ -9,6 +9,14 @@
  */
 class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
 {
+    
+    /**
+     * 
+     * ACL Object
+     * @var User_Model_Acl
+     */
+    private $_objAcl;
+    
     CONST MODULE_LOGIN = "user";
     
     CONST CONTROLLER_LOGIN  = "index";
@@ -17,15 +25,15 @@ class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
     CONST ACTION_UNAUTORISE = "unauthorized";
 
     public function preDispatch (Zend_Controller_Request_Abstract $request)
-    {        
-        $objAcl = new User_Model_Acl();
+    {     
+        $this->setAcl(new User_Model_Acl());
         
-    	//For this example, we will use the controller as the resource:
+		$module = $request->getModuleName ();
 		$resource = $request->getControllerName ();
 		$privilege = $request->getActionName ();
 		
 		// checking permission our special way
-		$boolFlag = $objAcl->checkPermissions ( $resource, $privilege );
+		$boolFlag = $this->getAcl()->checkPermissions ($module, $resource, $privilege );
 		
 		if (empty ( $boolFlag )) {		    
             if (! Zend_Auth::getInstance()->hasIdentity()) {
@@ -37,6 +45,27 @@ class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
 			    $request->setModuleName(self::MODULE_LOGIN)->setControllerName ( self::CONTROLLER_LOGIN )->setActionName ( self::ACTION_UNAUTORISE );
             }
 		}		
+		
 		return;		
+    }
+    
+    /**
+     * 
+     * Enter description here ...
+     * @param User_Model_Acl $objAcl
+     * @return User_Plugin_Authentication
+     */
+    public function setAcl(User_Model_Acl $objAcl){
+        $this->_objAcl = $objAcl;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Enter description here ...
+     * @return User_Model_Acl
+     */
+    public function getAcl(){
+        return $this->_objAcl;
     }
 }

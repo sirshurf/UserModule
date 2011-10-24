@@ -1,6 +1,6 @@
 <?php
 
-class User_Bootstrap extends SirShurf_Application_Module_Bootstrap
+class User_Bootstrap extends Bf_Application_Module_Bootstrap
 {
     /**
      * Init config settings and resoure for this module
@@ -34,7 +34,11 @@ class User_Bootstrap extends SirShurf_Application_Module_Bootstrap
     protected function _initAuthentication ()
     {
         $fc = Zend_Controller_Front::getInstance();
-        $fc->registerPlugin(new User_Plugin_Authentication());
+        $objUserAuthPlugin = new User_Plugin_Authentication(); 
+        $fc->registerPlugin($objUserAuthPlugin);
+        
+        $objView = $this->getApplication()->view;
+        $objView->getHelper('navigation')->setDefaultAcl($objUserAuthPlugin->getAcl());
     }
 
 

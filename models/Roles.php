@@ -2,24 +2,22 @@
 class User_Model_Roles
 {
     
-    CONST DEFAULT_ROLE_GUEST = "Guest";
-    CONST DEFAULT_ROLE_LOGGEDIN = "LoggedIn";
-    CONST DEFAULT_ROLE_SYSADMIN = "SysAdmin";
+    CONST DEFAULT_ROLE_GUEST = "1";
+    CONST DEFAULT_ROLE_LOGGEDIN = "2";
+    CONST DEFAULT_ROLE_SYSADMIN = "3";
     
     public static $arrRoles = array(
         self::DEFAULT_ROLE_GUEST => array(
-                "Name" => "Guest",
-                "Label" => "Guest",
-                "Parent" => "",
+                'id_roles' => 1,
+                "role" => "guest",
+                "Parent" => 1,
             ),
         self::DEFAULT_ROLE_LOGGEDIN => array(
                 "Name" => "LoggedIn",
-                "Label" => "LoggedIn",
                 "Parent" => "Guest",
             ),
         self::DEFAULT_ROLE_SYSADMIN => array(
                 "Name" => "SysAdmin",
-                "Label" => "SysAdmin",
                 "Parent" => "LoggedIn",
             )
     );
@@ -34,6 +32,9 @@ class User_Model_Roles
 	    } else {
 	        try {
 	            $roles = self::getRolesFromDb();
+	            if (!$roles->count()){
+	                $roles = self::getDefaultRoles();
+	            }
 	        } catch (Zend_Db_Exception $objE){
 	            $roles = self::getDefaultRoles();	            
 	        } catch (Exception $objE){
@@ -44,8 +45,21 @@ class User_Model_Roles
         return $objSessionUserData->roles; 
     }
     
-    public static function getRolesFromDb(){
-        throw new Zend_Db_Exception();
+    /**
+     * 
+     * Enter description here ...
+     * @return Zend_Db_Table_Rowset
+     */
+    public static function getRolesFromDb(){        
+        $objRoles = new User_Model_Db_Roles();
+        $objRolesSelect = $objRoles->select(TRUE);
+        $objRolesSelect->where(User_Model_Db_Resources::COL_IS_DELETED . ' = ?', false);
+        
+        $objRolesSelect->order(User_Model_Db_Roles::COL_ID_PARENT);
+        
+        $objRolesRowSet = $objRoles->fetchAll($objRolesSelect);
+        
+        return $objRolesRowSet;
     } 
     
     public static function getDefaultRoles(){

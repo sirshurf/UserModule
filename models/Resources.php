@@ -162,6 +162,12 @@ class User_Model_Resources
         if (isset($arrMapedResources, $arrMapedResources[$strModule], $arrMapedResources[$strModule][$strController])) {
             return $arrMapedResources[$strModule][$strController];
         }
+        self::initTable();
+    
+        $arrMapedResources = self::getMapedResource();
+        if (isset($arrMapedResources, $arrMapedResources[$strModule], $arrMapedResources[$strModule][$strController])) {
+            return $arrMapedResources[$strModule][$strController];
+        }   
         throw new Zend_Acl_Exception('Resources Id Not Found: M:' . $strModule . ' C:' . $strController);
     }
     

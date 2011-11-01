@@ -162,10 +162,10 @@ class User_IndexController extends Zend_Controller_Action
 
     public function inituserdetailsAction ()
     {
-        $objUserTable = new Labadmin_Models_Users();
+        $objUserTable = new User_Model_User();
         $objUserTable->forceUserDetailUpdate();
         
-        Labadmin_Models_Static::setJgrowlMessage("LBL_UPDATE_OK");
+        Bf_Static::setJgrowlMessage("LBL_UPDATE_OK");
         
         $strUrl = $this->view->url(array('module' => 'semesters', 'controller' => 'semester', 'action' => 'index'), null, true);
         $this->_redirect($strUrl);
@@ -211,17 +211,7 @@ class User_IndexController extends Zend_Controller_Action
                 }
                 closedir($handle);
             }
-        
-     //            Labadmin_Models_SystemMessages::initTable();
-        //            Labadmin_Models_ProjectStatuses::initTable();
-        //            Labadmin_Models_ProjectsRequestsStatuses::initTable();
-        //            Labadmin_Models_FilesPermission::initTable();
-        //            Labadmin_Models_SystemSettings::initTable();
-        //            Labadmin_Models_SystemNotification::initTable();
-        //            
-        //            Labadmin_Models_Static::setJgrowlMessage("LBL_ADMIN_INIT_DONE");
-        
-
+  
         }
         
         $arrButtons = array();

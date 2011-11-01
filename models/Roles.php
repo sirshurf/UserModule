@@ -8,17 +8,19 @@ class User_Model_Roles
     
     public static $arrRoles = array(
         self::DEFAULT_ROLE_GUEST => array(
-                'id_roles' => 1,
-                "role" => "guest",
-                "Parent" => 1,
+                User_Model_Db_Roles::COL_ID_ROLES => 1,
+                User_Model_Db_Roles::COL_ID_PARENT => 0,
+                User_Model_Db_Roles::COL_ROLE => 'guest',
             ),
         self::DEFAULT_ROLE_LOGGEDIN => array(
-                "Name" => "LoggedIn",
-                "Parent" => "Guest",
+                User_Model_Db_Roles::COL_ID_ROLES => 2,
+                User_Model_Db_Roles::COL_ID_PARENT => 1,
+                User_Model_Db_Roles::COL_ROLE => 'loggedin'
             ),
         self::DEFAULT_ROLE_SYSADMIN => array(
-                "Name" => "SysAdmin",
-                "Parent" => "LoggedIn",
+                User_Model_Db_Roles::COL_ID_ROLES => 3,
+                User_Model_Db_Roles::COL_ID_PARENT => 2,
+                User_Model_Db_Roles::COL_ROLE => 'sysadmin'
             )
     );
     
@@ -62,8 +64,12 @@ class User_Model_Roles
         return $objRolesRowSet;
     } 
     
-    public static function getDefaultRoles(){
-        return self::$arrRoles;
+    public static function getDefaultRoles(){      
+        $objRoles = new User_Model_Db_Roles();
+        foreach (self::$arrRoles as $arrRole){
+            $objRoles->insert($arrRole);
+        }
+        return self::getRolesFromDb();
     }
     
 }

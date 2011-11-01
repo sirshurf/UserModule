@@ -19,7 +19,7 @@ class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
     
     CONST MODULE_LOGIN = "user";
     
-    CONST CONTROLLER_LOGIN  = "index";
+    CONST CONTROLLER_LOGIN  = "authentication";
     
     CONST ACTION_LOGIN  = "login";    
     CONST ACTION_UNAUTORISE = "unauthorized";

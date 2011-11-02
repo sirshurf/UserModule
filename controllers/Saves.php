@@ -1,5 +1,5 @@
 <?php
-   
+   /**
      public function takepermitionAction ()
     {
         $nmbTzRequested = $this->_request->getParam("tz");
@@ -100,4 +100,4 @@ public function editaclAction ()
         }
         $this->view->objPermissions = Labadmin_Models_AclPermission::getMappedPermissionsRow(TRUE);
     }
-   
+   **/

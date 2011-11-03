@@ -17,6 +17,8 @@ class User_Model_Db_Users extends Bf_Db_Table
     CONST COL_FIRST_NAME = "firstname";
 
     CONST COL_LAST_NAME = "lastname";
+    
+    CONST COL_EXTRA_DATA = "extra";
 
     CONST COL_EMAIL = "email";
 

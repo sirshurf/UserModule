@@ -1,17 +1,23 @@
 <?php
-
 class User_Form_UserDetails extends ZendX_JQuery_Form
 {
-
-    public function init()
+    public function init ()
     {
+    	$this->addPrefixPath('Bf_Form_Element_', 'Bf/Form/Element/', Zend_Form::ELEMENT);
+    	
         /* Form Elements & Other Definitions Here ... */
-        
         $objOptions = new Zend_Config_Xml(
         dirname(__FILE__) . '/../configs/forms/forms.xml');
-        
         $this->setConfig($objOptions->profile);
-        
+        // Check if global file exists....
+        // If exists, add it as sub form...
+        if (is_readable(
+        APPLICATION_PATH . '/configs/forms/user.xml')) {
+            $objSubOptions = new Zend_Config_Xml(
+            APPLICATION_PATH . '/configs/forms/user.xml');
+           // $objSubForm = new ZendX_JQuery_Form($objSubOptions->profile);
+         //   $this->addSubForm($objSubForm, 'subformUserDetails');
+        }
         /*
 		$this->setName('LogIn');
 		$this->setMethod('post');
@@ -32,7 +38,5 @@ class User_Form_UserDetails extends ZendX_JQuery_Form
 		  
 		        */
     }
-
-
 }
 

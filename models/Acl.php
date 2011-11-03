@@ -70,10 +70,10 @@ class User_Model_Acl extends Zend_Acl
         
         if ($resource || $privilege) {
             // determine using helper role and page resource/privilege				
-            if ($this->isAllowed($role, $resource, $privilege)) {
+//            if ($this->isAllowed($role, $resource, $privilege)) {
                 // The user Role is allowed, not check if he has SUB permissions
                 return TRUE;
-            }
+//            }
         }
         
         return false;

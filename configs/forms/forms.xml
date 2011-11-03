@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <forms>
     <login>
-        <action>/login</action>
+        <action>/user/authentication/login</action>
         <method>post</method>
         <id>loginForm</id>
         <name>loginForm</name>
@@ -167,15 +167,31 @@
                     <required>true</required>
                 </options>
             </lastname>
-            <submit>
-                <type>submit</type>
-                <ignore>true</ignore>
+           <hashed_password>
+                <type>password</type>
                 <options>
-                    <label>Submit</label>
-                    <class>viewall</class>
-                    <order>4</order>
+                    <label>password:</label>
+                    <size>40</size>
+                    <validators>
+                        <notempty>
+                            <validator>NotEmpty</validator>
+                            <options>
+                                <messages>
+                                    <isEmpty>Your password is required</isEmpty>
+                                </messages>
+                            </options>
+                        </notempty>
+                    </validators>
+                    <filters>
+                        <trim>
+                            <filter>StringTrim</filter>
+                        </trim>
+                    </filters>
+                    <class></class>
+                    <required>true</required>
                 </options>
-            </submit>
+            </hashed_password>
+
         </elements>
     </profile>  
     <update_password>

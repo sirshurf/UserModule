@@ -74,7 +74,7 @@
             <username>
                 <type>text</type>
                 <options>
-                    <label>username:</label>
+                    <label>LBL_USERNAME</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -98,7 +98,7 @@
             <email>
                 <type>text</type>
                 <options>
-                    <label>email address:</label>
+                    <label>LBL_EMAIL</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -122,7 +122,7 @@
             <firstname>
                 <type>text</type>
                 <options>
-                    <label>first name:</label>
+                    <label>LBL_FIRST_NAME</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -146,7 +146,7 @@
             <lastname>
                 <type>text</type>
                 <options>
-                    <label>last name:</label>
+                    <label>LBL_LAST_NAME</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -167,17 +167,19 @@
                     <required>true</required>
                 </options>
             </lastname>
-           <hashed_password>
-                <type>password</type>
+ 	    <id_roles>
+                <type>DbSelect</type>
                 <options>
-                    <label>password:</label>
-                    <size>40</size>
+                        <dbSelect>Select id_roles, role from acl_roles where is_deleted = 0</dbSelect>
+                        <valueColumn>role</valueColumn>
+                        <identityColumn>id_roles</identityColumn>
+                    <label>LBL_ROLE</label>
                     <validators>
                         <notempty>
                             <validator>NotEmpty</validator>
                             <options>
                                 <messages>
-                                    <isEmpty>Your password is required</isEmpty>
+                                    <isEmpty>Your Role is required</isEmpty>
                                 </messages>
                             </options>
                         </notempty>
@@ -190,183 +192,7 @@
                     <class></class>
                     <required>true</required>
                 </options>
-            </hashed_password>
-
+            </id_roles>
         </elements>
     </profile>  
-    <update_password>
-        <action>/update-password</action>
-        <method>post</method>
-        <id>updatePasswordForm</id>
-        <name>updatePasswordForm</name>
-        <elements>
-            <password>
-                <type>password</type>
-                <options>
-                    <label>password:</label>
-                    <size>40</size>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your password is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                </options>
-            </password>
-            <confirm_password>
-                <type>password</type>
-                <options>
-                    <label>confirm password:</label>
-                    <size>40</size>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your confirmation password is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>                        
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                    <ignore>true</ignore>
-                </options>
-            </confirm_password>
-            <submit>
-                <type>submit</type>
-                <ignore>true</ignore>
-                <options>
-                    <label>Submit</label>
-                    <class>viewall</class>
-                    <order>4</order>
-                </options>
-            </submit>
-            <id>
-                <type>hidden</type>
-                <options>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your user id is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>                        
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                </options>
-            </id>
-        </elements>
-    </update_password>  
-    <forgot_password>
-        <action>/forgot-password</action>
-        <method>post</method>
-        <id>forgotPasswordForm</id>
-        <name>forgotPasswordForm</name>
-        <elements>
-            <username>
-                <type>text</type>
-                <options>
-                    <label>username:</label>
-                    <size>40</size>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your username is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                </options>
-            </username>
-            <email>
-                <type>text</type>
-                <options>
-                    <label>email address:</label>
-                    <size>40</size>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your email address is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>                        
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                </options>
-            </email>            
-            <submit>
-                <type>submit</type>
-                <ignore>true</ignore>
-                <options>
-                    <label>Submit</label>
-                    <class>viewall</class>
-                    <order>4</order>
-                </options>
-            </submit>
-            <user_id>
-                <type>hidden</type>
-                <options>
-                    <validators>
-                        <notempty>
-                            <validator>NotEmpty</validator>
-                            <options>
-                                <messages>
-                                    <isEmpty>Your user id is required</isEmpty>
-                                </messages>
-                            </options>
-                        </notempty>                        
-                    </validators>
-                    <filters>
-                        <trim>
-                            <filter>StringTrim</filter>
-                        </trim>
-                    </filters>
-                    <class></class>
-                    <required>true</required>
-                </options>
-            </user_id>
-        </elements>
-    </forgot_password>
 </forms>

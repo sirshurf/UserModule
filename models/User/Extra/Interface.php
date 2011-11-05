@@ -5,6 +5,19 @@ interface User_Model_User_Extra_Interface {
 	
 	public function getData();
 	
+	/**
+	 * 
+	 * Get the sub form of the elements
+	 * @return Zend_Form
+	 */
+	public function getForm();
+	
+	/**
+	 * 
+	 * Get Sub Form name
+	 */
+	public function getFormName();
+	
 	public function save();
 	
 }

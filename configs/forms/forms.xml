@@ -9,7 +9,7 @@
             <username>
                 <type>text</type>
                 <options>
-                    <label>username:</label>
+                    <label>LBL_USERNAME</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -33,7 +33,7 @@
             <password>
                 <type>password</type>
                 <options>
-                    <label>password:</label>
+                    <label>LBL_PASSWORD</label>
                     <size>40</size>
                     <validators>
                         <notempty>
@@ -54,15 +54,6 @@
                     <required>true</required>
                 </options>
             </password>
-            <submit>
-                <type>submit</type>
-                <ignore>true</ignore>
-                <options>
-                    <label>Submit</label>
-                    <class>viewall</class>
-                    <order>4</order>
-                </options>
-            </submit>
         </elements>
     </login>
     <profile>

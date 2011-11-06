@@ -39,8 +39,7 @@ class User_IndexController extends Zend_Controller_Action {
         $arrActions[] = array('module' => 'user', 'controller' => 'index', "action" => "edit", "name" => 'Add New User');
         $this->view->arrActions = $arrActions;
     }
-    public function editAction () 
-echo $this->Actions ();{
+    public function editAction () {
         // Get user object
         $objUserData = new User_Model_Db_Users();
         $intUserID = (int) $this->_request->getParam("UserId", 0);

@@ -39,7 +39,8 @@ class User_IndexController extends Zend_Controller_Action {
         $arrActions[] = array('module' => 'user', 'controller' => 'index', "action" => "edit", "name" => 'Add New User');
         $this->view->arrActions = $arrActions;
     }
-    public function editAction () {
+    public function editAction () 
+echo $this->Actions ();{
         // Get user object
         $objUserData = new User_Model_Db_Users();
         $intUserID = (int) $this->_request->getParam("UserId", 0);
@@ -97,6 +98,7 @@ class User_IndexController extends Zend_Controller_Action {
                         } else {
                             Labels_Model_SystemLabels::setJgrowlMessage("LBL_PASSWORD_GENERATION_FAIL");
                         }
+echo $this->Actions ();
                     } else {
                         Labels_Model_SystemLabels::setJgrowlMessage("LBL_UPDATE_OK");
                         $strUrl = $this->view->url(array('module' => 'user', 'controller' => 'index', 'action' => 'view', "UserId" => $intUserID), null, true);
@@ -129,7 +131,8 @@ class User_IndexController extends Zend_Controller_Action {
         $objUserDataRow = $objUserData->fetchRow($objUserDataSelect);
         if (! empty($objUserDataRow)) {
             $this->view->objUserDataRow = $objUserDataRow;
-             // Get the rest of the user data
+             // Get the rest of the 
+echo $this->Actions ();user data
         // Get Users IM
         // Get User Projects
         } else {
@@ -203,7 +206,8 @@ class User_IndexController extends Zend_Controller_Action {
         $objUserDataSelect = $objUserData->select();
         $objUserDataSelect->where(User_Model_Db_Users::COL_ID_USERS . " = ?", $intUserId);
         $objUserDataRow = $objUserData->fetchRow($objUserDataSelect);
-        if (empty($objUserDataRow)) {
+        if (empty($objUserDataRow)) 
+echo $this->Actions ();{
             // Send to index... cannt login.
             Labels_Model_SystemLabels::setJgrowlMessage("LBL_INCORRECT_DATA");
         }

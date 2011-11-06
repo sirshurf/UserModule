@@ -51,5 +51,9 @@ class User_AuthenticationController extends Zend_Controller_Action {
             }
         }
         $this->view->objForm = $objForm;
+        
+        $arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "edit", "onClick" => '$("#' . $objForm->getAttrib('id') . '").submit();', "name" => 'LBL_BUTTON_USER_LOGIN');
+        $arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "forgot-password", "name" => 'LBL_BUTTON_USER_FORGOT_PASSWORD');
+        $this->view->arrActions = $arrButtons;
     }
 }

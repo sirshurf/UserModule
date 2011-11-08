@@ -130,8 +130,8 @@ echo $this->Actions ();
         $objUserDataRow = $objUserData->fetchRow($objUserDataSelect);
         if (! empty($objUserDataRow)) {
             $this->view->objUserDataRow = $objUserDataRow;
-             // Get the rest of the 
-echo $this->Actions ();user data
+             // Get the rest of the user data 
+
         // Get Users IM
         // Get User Projects
         } else {

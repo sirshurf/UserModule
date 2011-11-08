@@ -24,12 +24,18 @@ class User_Model_Roles
             )
     );
     
-    public static function getRoles(){
+    /**
+     * 
+     * Enter description here ...
+     * @throws Exception
+     * @return Zend_Db_Table_Rowset
+     */
+    public static function getRoles($boolCheckSession = TRUE){
     
 	    $objSessionUserData = new Zend_Session_Namespace('userData');
 	    
 		// Add roles to the Acl element		
-	    if (!empty($objSessionUserData->roles)){
+	    if ($boolCheckSession && !empty($objSessionUserData->roles)){
 		    $roles = $objSessionUserData->roles;
 	    } else {
 	        try {

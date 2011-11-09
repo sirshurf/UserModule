@@ -22,7 +22,7 @@ class User_Model_Db_Users extends Bf_Db_Table
 
     CONST COL_EMAIL = "email";
     
-    CONST COL_ID_ROLE = "id_role";
+    CONST COL_ID_ROLE = "id_roles";
 
     CONST COL_IS_ACTIVE = "is_active";
 

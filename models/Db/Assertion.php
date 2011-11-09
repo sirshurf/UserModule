@@ -16,14 +16,4 @@ class User_Model_Db_Assertion extends Bf_Db_Table
     
     CONST COL_ASS_DESC = "assertion_desc";
 
-    CONST COL_UPDATED_BY = 'updated_by';
-
-    CONST COL_UPDATED_ON = 'updated_on';
-
-    CONST COL_CREATED_BY = 'created_by';
-
-    CONST COL_CREATED_ON = 'created_on';
-
-    CONST COL_IS_DELETED = 'is_deleted';
-
 }

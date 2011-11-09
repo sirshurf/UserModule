@@ -1,0 +1,50 @@
+<?php 
+echo $this->grid;
+echo "<div id='".$this->objForm->getAttrib('id')."_div'>";
+echo $this->objForm;
+echo "</div>";
+
+?>
+<script type="text/javascript">
+<!--
+function getActions(intResourceId){
+	$('#action_div').html("");
+	$.get('<?php echo $this->url( array ('module'=>'user','controller' => 'authorization', 'action' => 'getaction'), null, true, false );?>/ResourceId/'+intResourceId, function(data) {
+		$('#action-element').html(data);
+	});
+}
+$("#<?php echo $this->objForm->getAttrib('id');?>_div").dialog({
+	autoOpen: false,
+	height: 'auto',
+	width: 'auto',
+	modal: true,
+	buttons: {
+		"<?php
+		echo $this->translate('LBL_BTN_FOLDER_FORM_SAVE');
+		?>": function() {
+
+		var formSerializeData = $('#<?php echo $this->objForm->getAttrib("id");?>').serialize();
+			// Save Meeting Data
+		$.post('<?php echo $this->url ( array ('module' => 'user', 'controller' => 'authorization', 'action' => 'saveacl', null, true )); ?>', formSerializeData, function(data, textStatus) {
+			  //data contains the JSON object
+			  //textStatus contains the status: success, error, etc
+				if (data.msg !== ''){
+					$.jGrowl(data.msg);
+				}
+				if (data.code == 'ok'){
+					$('#acl').trigger("reloadGrid");
+				}	
+			}, "json");
+		
+							
+			$( this ).dialog( "close" );
+		},
+		"<?php
+		echo $this->translate('LBL_BTN_FOLDER_FORM_CANCEL');
+		?>": function() {
+			$( this ).dialog( "close" );
+		}
+	}
+});
+//-->
+</script>

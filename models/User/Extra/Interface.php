@@ -23,6 +23,6 @@ interface User_Model_User_Extra_Interface {
 	 */
 	public function getFormName();
 	
-	public function save();
+	public function save($arrFormValues);
 	
 }

@@ -39,6 +39,21 @@ class User_Model_Assertion
 		
 		return $objAssertionRowSet;
 	}
+	
+
+	/**
+	 * 
+	 * Enter description here ...
+	 * @return Zend_Db_Select
+	 */
+	public static function getPairSelect(){
+		$objModel = new User_Model_Db_Assertion();
+		$objSelect = $objModel->select(TRUE);
+		$objSelect->reset(Zend_Db_Select::COLUMNS);
+		$objSelect->columns(array(User_Model_Db_Assertion::COL_ID_ASS,User_Model_Db_Assertion::COL_ASS_NAME));
+		$objSelect->where(User_Model_Db_Assertion::COL_IS_DELETED." = ?",FALSE);		
+		return $objSelect;
+	}
 
 }
 

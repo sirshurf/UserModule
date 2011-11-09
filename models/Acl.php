@@ -52,7 +52,7 @@ class User_Model_Acl extends Zend_Acl
 			foreach ($arrPermissions as $objPermissionRow) {				
 				$intIdRole = ((0 == $objPermissionRow->{User_Model_Db_Permissions::COL_ID_ROLES}) ? null : $objPermissionRow->{User_Model_Db_Permissions::COL_ID_ROLES});
 				$intIdResource = $objPermissionRow->{User_Model_Db_Permissions::COL_ID_RESOURCES};
-				$strAction = (('all' == $objPermissionRow->{User_Model_Db_Permissions::COL_ACTION}) ? null : $objPermissionRow->{User_Model_Db_Permissions::COL_ACTION});
+				$strAction = ((empty($objPermissionRow->{User_Model_Db_Permissions::COL_ACTION})) ? null : $objPermissionRow->{User_Model_Db_Permissions::COL_ACTION});
 				$objAssertion = ((empty($objPermissionRow->{User_Model_Db_Permissions::COL_ASSERTION})) ? null : $this->_arrAssertions[$objPermissionRow->{User_Model_Db_Permissions::COL_ASSERTION}]);  
 				$this->allow($intIdRole, $intIdResource,$strAction, $objAssertion);
 			}

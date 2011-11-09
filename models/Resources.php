@@ -18,6 +18,8 @@ class User_Model_Resources
     CONST ACTION = "Action";
 
     CONST CONTROLLER = "Controller";
+    
+    CONST CONCAT_RES_NAME = 'concat_resource';
 
     public static function getResources ($boolReload = false)
     {
@@ -171,7 +173,22 @@ class User_Model_Resources
         throw new Zend_Acl_Exception('Resources Id Not Found: M:' . $strModule . ' C:' . $strController);
     }
     
-    
-
+	/**
+	 * 
+	 * Enter description here ...
+	 * @return Zend_Db_Select
+	 */
+	public static function getPairSelect(){
+		$objModel = new User_Model_Db_Resources();
+		$objSelect = $objModel->select(TRUE);
+		$objSelect->reset(Zend_Db_Select::COLUMNS);
+		$objSelect->columns(array(User_Model_Db_Resources::COL_ID_RESOURCES,self::CONCAT_RES_NAME => self::getConcatColumn()));
+		$objSelect->where(User_Model_Db_Resources::COL_IS_DELETED." = ?",FALSE);		
+		return $objSelect;
+	}
+	
+	public static function getConcatColumn(){
+		return new Zend_Db_Expr("CONCAT_WS('/'," . User_Model_Db_Resources::COL_MODULE . "," . User_Model_Db_Resources::COL_CONTROLLER . ")");
+	}
 }
 

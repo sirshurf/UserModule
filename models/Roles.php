@@ -78,5 +78,19 @@ class User_Model_Roles
         return self::getRolesFromDb();
     }
     
+	/**
+	 * 
+	 * Enter description here ...
+	 * @return Zend_Db_Select
+	 */
+	public static function getPairSelect(){
+		$objModel = new User_Model_Db_Roles();
+		$objSelect = $objModel->select(TRUE);
+		$objSelect->reset(Zend_Db_Select::COLUMNS);
+		$objSelect->columns(array(User_Model_Db_Roles::COL_ID_ROLES,User_Model_Db_Roles::COL_ROLE));
+		$objSelect->where(User_Model_Db_Roles::COL_IS_DELETED." = ?",FALSE);		
+		return $objSelect;
+	}
+    
 }
 

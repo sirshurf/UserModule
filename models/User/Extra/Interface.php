@@ -6,6 +6,7 @@ interface User_Model_User_Extra_Interface {
 	/**
 	 * 
 	 * GEt Spesific Data
+	 * @return array
 	 */
 	public function getData();
 	

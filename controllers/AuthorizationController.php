@@ -25,7 +25,7 @@ class User_AuthorizationController extends Zend_Controller_Action
 		
 		Ingot_JQuery_JqGrid_Column_DoubleColumn::createSelectColumn($objGrid, 'Roles');
 		
-		Ingot_JQuery_JqGrid_Column_DoubleColumn::createSelectColumn($objGrid, 'Assertion');
+		Ingot_JQuery_JqGrid_Column_DoubleColumn::createSelectColumn($objGrid, 'Assertion', array(), FALSE);
 		
 		$objGridPager = $objGrid->getPager();
 		
@@ -152,7 +152,7 @@ class User_AuthorizationController extends Zend_Controller_Action
 			if ($this->getRequest()->isPost()) {
 				$arrData = $this->getRequest()->getPost();
 				
-				if ('all' == $arrData[User_Model_Db_Permissions::COL_ACTION]){
+				if (!empty($arrData[User_Model_Db_Permissions::COL_ACTION]) && 'all' == $arrData[User_Model_Db_Permissions::COL_ACTION]){
 					$arrData[User_Model_Db_Permissions::COL_ACTION] = null;
 				}
 				

@@ -63,7 +63,7 @@ class User_Model_Acl extends Zend_Acl
 		self::$objIntance = $this;
 	}
 
-	public function checkPermissionsById ($resource = null, $privilege = null, $intLabId = null, $intProjectId = null, $boolStricked = false)
+	public function checkPermissionsById ($resource = null, $privilege = null)
 	{
 		if (Zend_Auth::getInstance()->hasIdentity()) {
 			$session = new Zend_Session_Namespace("user");
@@ -98,7 +98,7 @@ class User_Model_Acl extends Zend_Acl
 	 * @param $privilege
 	 * @return bool
 	 */
-	public function checkPermissions ($module = null, $controller = null, $privilege = null, $intLabId = null, $intProjectId = null, $boolStricked = false)
+	public function checkPermissions ($module = null, $controller = null, $privilege = null)
 	{
 		/**
 		 * Removes php ending for reports usage...
@@ -111,7 +111,7 @@ class User_Model_Acl extends Zend_Acl
 		//
 		$resource = User_Model_Resources::getResourceId($module, $controller);
 		if ($resource || $privilege) {
-			return $this->checkPermissionsById($resource, $privilege, $intLabId, $intProjectId, $boolStricked);
+			return $this->checkPermissionsById($resource, $privilege);
 		}
 		return false;
 	}

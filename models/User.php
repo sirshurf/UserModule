@@ -107,5 +107,28 @@ class User_Model_User {
         $strMessageAfterReplace = preg_replace($strPattern, $strNewPassword, $strNewMessage);
         return $strMessageAfterReplace;
     }
+
+    public static function makeLogin ($strUsername, $strPassword)
+    {
+        $username = $strUsername;
+        $password = $strPassword;
+        
+        $auth = Zend_Auth::getInstance();
+        
+        $authAdapter = new Zend_Auth_Adapter_DbTable();
+        $authAdapter->setTableName(User_Model_Db_Users::TBL_NAME)
+            ->setIdentityColumn(User_Model_Db_Users::COL_LOGIN)
+            ->setCredentialColumn(User_Model_Db_Users::COL_PWD)
+            ->setCredentialTreatment('md5(?)')
+            ->setIdentity($username)
+            ->setCredential($password);
+        // Remove it from Array... 
+        $result = $auth->authenticate($authAdapter);
+        if ($result->isValid()) {
+            $session = new Zend_Session_Namespace("user");
+            $session->userDetails = $authAdapter->getResultRowObject();        
+        }
+        return $result;
+    }
 }
 

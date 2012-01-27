@@ -26,7 +26,8 @@ class User_Plugin_Authentication extends Zend_Controller_Plugin_Abstract
 
     public function preDispatch (Zend_Controller_Request_Abstract $request)
     {     
-        $this->setAcl(new User_Model_Acl());
+    	
+        $this->setAcl(User_Model_Acl::getInstance());
         
 		$module = $request->getModuleName ();
 		$resource = $request->getControllerName ();

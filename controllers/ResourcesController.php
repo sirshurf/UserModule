@@ -14,10 +14,14 @@ class User_ResourcesController extends Zend_Controller_Action
         $objGrid->setIdCol(User_Model_Db_Resources::COL_ID_RESOURCES);
         $objGrid->setLocalEdit();
         
-        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_MODULE));
-        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_CONTROLLER));
+        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_MODULE, array('editable' => true)));
+        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_CONTROLLER, array('editable' => true)));
         
-        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_IS_VIRTUAL));
+        $objGrid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Resources::COL_IS_VIRTUAL, array('editable' => true)));
+        
+        $objGridPager = $objGrid->getPager ();
+        $objGridPager->setDefaultAdd ();
+        $objGrid->setDblClkEdit(TRUE);
         
         $objGrid->registerPlugin(new Ingot_JQuery_JqGrid_Plugin_ToolbarFilter());
         $this->view->grid = $objGrid->render();

@@ -22,6 +22,8 @@ class User_Model_Db_Users extends Bf_Db_Table
 
     CONST COL_EMAIL = "email";
     
+    CONST COL_PHONE = "phone";
+    
     CONST COL_ID_ROLE = "id_roles";
 
     CONST COL_IS_ACTIVE = "is_active";
@@ -35,7 +37,7 @@ class User_Model_Db_Users extends Bf_Db_Table
     CONST COL_CREATED_ON = 'created_on';
 
     CONST COL_IS_DELETED = 'is_deleted';
-
+    
     protected $_referenceMap = array(
     'Roles' => array('columns' => array(self::COL_ID_ROLE), 'refTableClass' => 'User_Model_Db_Roles', 'refColumns' => array(User_Model_Db_Roles::COL_ID_ROLES), 'displayColumn' => User_Model_Db_Roles::COL_ROLE));
     

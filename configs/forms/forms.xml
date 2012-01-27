@@ -158,6 +158,30 @@
                     <required>true</required>
                 </options>
             </lastname>
+            <phone>
+                <type>text</type>
+                <options>
+                    <label>LBL_PHONE</label>
+                    <size>40</size>
+                    <validators>
+                        <notempty>
+                            <validator>NotEmpty</validator>
+                            <options>
+                                <messages>
+                                    <isEmpty>Your phone is required</isEmpty>
+                                </messages>
+                            </options>
+                        </notempty>                        
+                    </validators>
+                    <filters>
+                        <trim>
+                            <filter>StringTrim</filter>
+                        </trim>
+                    </filters>
+                    <class></class>
+                    <required>true</required>
+                </options>
+            </phone>
  	    <id_roles>
                 <type>DbSelect</type>
                 <options>

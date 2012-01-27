@@ -1,19 +1,30 @@
 <?php
-class User_AuthenticationController extends Zend_Controller_Action {
-    public function selfonlyAction () {
+
+class User_AuthenticationController extends Zend_Controller_Action
+{
+
+    public function selfonlyAction ()
+    {
         // Empty Action, only view		
     }
-    public function unauthorizedAction () {
+
+    public function unauthorizedAction ()
+    {
         // Empty Action, only view	
     }
+
     /**
      * Standart logout, clears all ident data
      */
-    public function logoutAction () {
+    public function logoutAction ()
+    {
+        $this->view->strMsgLogout = $this->view->translate('LBL_TEXT_LOGOUT');
         Zend_Auth::getInstance()->clearIdentity();
         Zend_Session::destroy(TRUE);
     }
-    public function loginAction () {
+
+    public function loginAction ()
+    {
         // First check if you have Identity... If you do redirecto to home
         $auth = Zend_Auth::getInstance();
         if ($auth->hasIdentity()) {
@@ -24,19 +35,9 @@ class User_AuthenticationController extends Zend_Controller_Action {
             if ($objForm->isValid($this->_request->getPost())) {
                 $username = trim($objForm->getValue(User_Model_Db_Users::COL_LOGIN));
                 $password = trim($objForm->getValue('password'));
-                // ...or configure the instance with setter methods
-                $authAdapter = new Zend_Auth_Adapter_DbTable();
-                $authAdapter->setTableName(User_Model_Db_Users::TBL_NAME)
-                    ->setIdentityColumn(User_Model_Db_Users::COL_LOGIN)
-                    ->setCredentialColumn(User_Model_Db_Users::COL_PWD)
-                    ->setCredentialTreatment('md5(?)')
-                    ->setIdentity($username)
-                    ->setCredential($password);
                 // Remove it from Array... 
-                $result = $auth->authenticate($authAdapter);
+                $result = User_Model_User::makeLogin($username, $password);
                 if ($result->isValid()) {
-                    $session = new Zend_Session_Namespace("user");
-                    $session->userDetails = $authAdapter->getResultRowObject();
                     $session = new Zend_Session_Namespace("uri");
                     if (! empty($session->url['params'])) {
                         $strUrl = $this->view->url($session->url['params']);
@@ -47,13 +48,15 @@ class User_AuthenticationController extends Zend_Controller_Action {
                 } else {
                     $arrMessages = $result->getMessages();
                     $objForm->addError($arrMessages[0]);
+                    $objForm->setDecorators(array('FormElements', 'FormErrors', 'Form'));
                 }
             }
         }
         $this->view->objForm = $objForm;
-        
-        $arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "edit", "onClick" => '$("#' . $objForm->getAttrib('id') . '").submit();', "name" => 'LBL_BUTTON_USER_LOGIN');
+        $arrButtons[] = array('module' => 'user', 'controller' => 'authentication', "action" => "login", "onClick" => '$("#' . $objForm->getAttrib('id') . '").submit();', 
+        "name" => 'LBL_BUTTON_USER_LOGIN');
         $arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "forgot-password", "name" => 'LBL_BUTTON_USER_FORGOT_PASSWORD');
         $this->view->arrActions = $arrButtons;
     }
-}
+
+} 

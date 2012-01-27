@@ -22,7 +22,7 @@ class User_IndexController extends Zend_Controller_Action
 		}
 		// render
 		$this->view->objForm = $objForm;
-		$arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "edit", "onClick" => '$("#' . $objForm->getAttrib('id') . '").submit();', "name" => 'LBL_BUTTON_USER_PASSWORD_NEW');
+		$arrButtons[] = array('module' => 'user', 'controller' => 'index', "action" => "forgot-password", "onClick" => '$("#' . $objForm->getAttrib('id') . '").submit();', "name" => 'LBL_BUTTON_USER_PASSWORD_NEW');
 		$this->view->arrActions = $arrButtons;
 	}
 
@@ -38,6 +38,25 @@ class User_IndexController extends Zend_Controller_Action
 		$grid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Users::COL_FIRST_NAME));
 		$grid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Users::COL_LAST_NAME));
 		$grid->addColumn(new Ingot_JQuery_JqGrid_Column_Decorator_Link(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Users::COL_EMAIL), array('link' => 'mailto:%s')));
+		
+		$grid->addColumn(new Ingot_JQuery_JqGrid_Column(User_Model_Db_Users::COL_PHONE));
+		
+		Ingot_JQuery_JqGrid_Column_DoubleColumn::createSelectColumn($grid, 'Roles');
+				
+		$objSites = new Qstat_Db_Table_Sites();
+		$objSitesSelect = $objSites->getPairSelect();		
+		$arrPairs = $objSites->getAdapter()->fetchPairs($objSitesSelect);		
+		$column = new Ingot_JQuery_JqGrid_Column_Decorator_Search_Select(new Ingot_JQuery_JqGrid_Column('sites', array('useHaving'=>true, 'customField' => User_Model_Db_Users::COL_EXTRA_DATA)), array("value" => $arrPairs));
+		$grid->addColumn(new Qstat_JQuery_JqGrid_Column_Decorator_UserExtra($column, array('values' => $arrPairs)));
+				
+		$objSites = new Qstat_Db_Table_Groups();
+		$objSitesSelect = $objSites->getPairSelect();		
+		$arrPairs = $objSites->getAdapter()->fetchPairs($objSitesSelect);		
+		$column = new Ingot_JQuery_JqGrid_Column_Decorator_Search_Select(new Ingot_JQuery_JqGrid_Column('groups', array('useHaving'=>true, 'customField' => User_Model_Db_Users::COL_EXTRA_DATA)), array("value" => $arrPairs));
+		$grid->addColumn(new Qstat_JQuery_JqGrid_Column_Decorator_UserExtra($column, array('values' => $arrPairs)));
+		
+		
+		
 		$grid->registerPlugin(new Ingot_JQuery_JqGrid_Plugin_ToolbarFilter());
 		$this->view->grid = $grid->render();
 		$arrActions = array();
@@ -72,11 +91,16 @@ class User_IndexController extends Zend_Controller_Action
 			$objExtraData = new $strExtraDataClass();
 			if ($objExtraData instanceof User_Model_User_Extra_Interface) {
 				$objExtraData->setMainRow($objUserRow);
-				$objForm->addSubForm($objExtraData->getForm($this->getRequest()
-					->getParams()), $objExtraData->getFormName());
+				
+				$objSubForm = $objExtraData->getForm($this->getRequest()
+					->getParams());
+				
+				$objExtraData->validateElements($objSubForm);
+				$objForm->addSubForm($objSubForm, $objExtraData->getFormName());
 				$objForm->populate($objExtraData->getData());
 			}
 		}
+		$objForm->validateElements();
 		$objForm->populate($objUserRow->toArray());
 		if ($this->_request->isPost()) {
 			$formData = $this->_request->getPost();

@@ -14,7 +14,7 @@ class User_Bootstrap extends Bf_Application_Module_Bootstrap
         $fc->registerPlugin($objUserAuthPlugin);
         
         $objView = $this->getApplication()->view;
-        $objView->getHelper('navigation')->setDefaultAcl($objUserAuthPlugin->getAcl());
+        $objView->getHelper('navigation')->setDefaultAcl(User_Model_Acl::getInstance());
     }
 
 
